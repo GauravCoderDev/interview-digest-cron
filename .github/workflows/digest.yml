@@ -1,40 +1,33 @@
 name: Interview Pattern Digest Ingestion Pipeline
-
 on:
-  schedule:
-    # Runs 3 times a day (02:00, 10:00, 18:00 UTC)
-    # - cron: '0 2,10,18 * * *'  # TEMPORARILY DISABLED UNTIL SEPT 1
-  workflow_dispatch: # Allows manual trigger from GitHub UI
-
+  workflow_dispatch:
 concurrency:
   group: interview-digest-pipeline
   cancel-in-progress: false
-
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    
     steps:
-    - name: Checkout repository
+    - name: Checkout Private Repository
       uses: actions/checkout@v4
-      
+      with:
+        repository: gaurav404-09/interview-digest
+        ssh-key: ${{ secrets.PRIVATE_REPO_DEPLOY_KEY }}
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
-        
     - name: Install dependencies
       run: |
         cd backend
         python -m pip install --upgrade pip
         pip install -r requirements.txt
-        
-    - name: Run Pipeline Orchestrator (Ingestion + Extraction + Digest)
+    - name: Run Pipeline Orchestrator
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
         SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
         GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        GEMINI_MODEL_NAME: ${{ vars.GEMINI_MODEL_NAME || 'gemini-3.1-flash-lite' }}
+        GEMINI_MODEL_NAME: 'gemini-3.1-flash-lite'
         GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
         MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
