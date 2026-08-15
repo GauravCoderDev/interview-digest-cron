@@ -1,9 +1,14 @@
 name: Interview Pattern Digest Ingestion Pipeline
+
 on:
+  schedule:
+    - cron: '0 2,10,18 * * *'
   workflow_dispatch:
+
 concurrency:
   group: interview-digest-pipeline
   cancel-in-progress: false
+
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
@@ -13,15 +18,18 @@ jobs:
       with:
         repository: gaurav404-09/interview-digest
         ssh-key: ${{ secrets.PRIVATE_REPO_DEPLOY_KEY }}
+        
     - name: Set up Python
       uses: actions/setup-python@v5
       with:
         python-version: '3.11'
+        
     - name: Install dependencies
       run: |
         cd backend
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        
     - name: Run Pipeline Orchestrator
       env:
         SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
