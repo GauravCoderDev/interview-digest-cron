@@ -1,28 +1,24 @@
 name: Candidate Company Discovery
-
 on:
-  schedule:
-    # Run at 14:00 UTC every Sunday (late evening in India)
-    # - cron: '0 14 * * 0'  # TEMPORARILY DISABLED UNTIL SEPT 1
   workflow_dispatch:
-
 jobs:
   digest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      
+      - name: Checkout Private Repository
+        uses: actions/checkout@v4
+        with:
+          repository: gaurav404-09/interview-digest
+          ssh-key: ${{ secrets.PRIVATE_REPO_DEPLOY_KEY }}
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-          
       - name: Install dependencies
         run: |
           cd backend
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          
       - name: Run Candidate Digest Script
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
