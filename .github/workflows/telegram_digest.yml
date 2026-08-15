@@ -2,8 +2,10 @@ name: Telegram Broadcast Digest
 
 on:
   schedule:
-    - cron: '30 */2 * * *'
+    # Run 3 times a day (1 hour after the ingestion pipeline)
+    - cron: '0 3,11,19 * * *'
   workflow_dispatch:
+
 
 concurrency:
   group: telegram_broadcast
